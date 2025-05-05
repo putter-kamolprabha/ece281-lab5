@@ -39,7 +39,31 @@ end controller_fsm;
 
 architecture FSM of controller_fsm is
 
+signal f_Q : std_logic_vector (3 downto 0) := "0001"; 
+signal f_Q_next : std_logic_vector (3 downto 0);
+
 begin
 
+--Next-Stae Logic 
+    f_Q_next(0) <= (i_adv and f_Q(3)); 
+    f_Q_next(1) <= (i_adv and f_Q(0));
+    f_Q_next(2) <= (i_adv and f_Q(1));
+    f_Q_next(3) <= (i_adv and f_Q(2));
+    
+--Output Logic 
+    o_cycle <= "0001" when f_Q = x"1" else
+               "0010" when f_Q = x"2" else
+               "0100" when f_Q = x"4" else
+               "1000" when f_Q = x"8";  
+    
+process (i_adv, i_reset)
+begin 
+    if i_reset = '1' then 
+        f_Q <= "0001";
+    elsif rising_edge(i_adv) then 
+        f_Q <= f_Q_next; 
+    end if; 
+    
+end process; 
 
 end FSM;
